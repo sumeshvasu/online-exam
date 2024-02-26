@@ -18,7 +18,7 @@ use Illuminate\View\View;
 class ExamController extends Controller
 {
     /**
-     * Display the loan details page.
+     * Exam form.
      *
      * @return \Illuminate\View\View
      */
