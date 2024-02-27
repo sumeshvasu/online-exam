@@ -25,7 +25,7 @@
                         <div class="mb-4 mt-4">
                             <x-input-label for="question" :value="__('Question')" />
                             <x-text-input id="question" class="block mt-1 w-full" type="text" name="question"
-                                :value="old('question')" autofocus autocomplete="question" />
+                                :value="old('question')" required autofocus autocomplete="question" />
                             <x-input-error :messages="$errors->get('question')" class="mt-2" />
                         </div>
 

@@ -19,6 +19,11 @@
                     </span>
                 @endif
 
+                @if (count($list) == 0)
+                    <span class="alert alert-success pl-6" style="color: red">Questions are unavailable. Please
+                        wait...</span>
+                @endif
+
                 <div class="">
                     <form method="POST" action="{{ route('validate-exam') }}">
                         @csrf
