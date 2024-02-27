@@ -109,7 +109,7 @@
             $("#email").prop("readonly", false);
             $("#name").prop("readonly", false);
 
-            if ($('#error-message-block').text().length == 401) {
+            if ($('#error-message-block').text().trim().length == 0) {
                 $("#question-list").hide();
             } else {
                 $("#question-list").show();
