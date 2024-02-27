@@ -42,13 +42,15 @@
                                 :value="old('email')" required autofocus autocomplete="username" style="float: left" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
 
-                            <x-primary-button class="ml-2 mt-1 pt-3" type="button" id="validateUser">Validate
-                                User</x-primary-button>
+                            <x-primary-button class="ml-2 mt-1 pt-3" type="button"
+                                id="validateUser">Start</x-primary-button>
                         </div>
                         @if ($list)
-                            @foreach ($list as $row)
-                                <x-input-error :messages="$errors->get('question_' . $row->id)" class="mt-2 mb-2" />
-                            @endforeach
+                            <div id="error-message-block">
+                                @foreach ($list as $row)
+                                    <x-input-error :messages="$errors->get('question_' . $row->id)" class="mt-2 mb-2" />
+                                @endforeach
+                            </div>
                         @endif
 
                         <div id="question-list">
@@ -104,36 +106,63 @@
     </div>
     <script>
         $(document).ready(function() {
-            $("#question-list").hide();
+            $("#email").prop("readonly", false);
+            $("#name").prop("readonly", false);
+
+            if ($('#error-message-block').text().length == 401) {
+                $("#question-list").hide();
+            } else {
+                $("#question-list").show();
+                $('#validateUser').text('Started');
+                $("#email").prop("readonly", true);
+                $("#name").prop("readonly", true);
+            }
 
             $("#validateUser").on("click", function() {
-                if ($("#email").val()) {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
+                if (IsEmail($("#email").val()) === false) {
+                    alert('Please provide a valid email.');
+                } else {
 
-                    $.ajax({
-                        url: '{{ url('/validate-user') }}',
-                        type: "post",
-                        data: "email=" + $('#email').val(),
-                        beforeSend: function() {
-                            $('#validateUser').append("loading..");
-                            $("#question-list").hide();
-                        },
-                        success: function(result) {
-                            $('#validateUser').text('Validate User');
-
-                            if (result == 'valid') {
-                                $("#question-list").show();
-                            } else {
-                                alert('You are already finished this exam');
+                    if ($("#email").val()) {
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             }
-                        }
-                    });
+                        });
+
+                        $.ajax({
+                            url: '{{ url('/validate-user') }}',
+                            type: "post",
+                            data: "email=" + $('#email').val(),
+                            beforeSend: function() {
+                                $('#validateUser').append("loading..");
+                                $("#question-list").hide();
+                            },
+                            success: function(result) {
+                                $('#validateUser').text('Started');
+
+                                if (result == 'valid') {
+                                    $("#question-list").show();
+                                    $("#email").prop("readonly", true);
+                                    $("#name").prop("readonly", true);
+                                } else {
+                                    alert('You are already finished this exam');
+                                }
+                            }
+                        });
+                    }
                 }
             });
+
+            function IsEmail(email) {
+                const regex =
+                    /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if (!regex.test(email)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
         });
     </script>
 </x-app-layout>
